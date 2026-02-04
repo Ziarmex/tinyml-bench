@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tinyml-bench"
+version = "0.1.0"
+description = "Reproducible TinyML benchmark harness (float vs int8 PTQ vs int8 QAT)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+train = [
+    "numpy>=1.26",
+    "tensorflow>=2.16",
+    "tensorflow-model-optimization>=0.8.1",
+    "tf-keras>=2.16",
+]
+test = ["pytest>=8"]
+
+[project.scripts]
+tinyml-bench = "tinyml_bench.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

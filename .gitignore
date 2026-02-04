@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Model artifacts
+results/*.tflite
+results/*.h5
+results/*.keras
+*.npz
+
+# ESP32 firmware generated/build
+firmware/esp32_bench/main/model_data.h
+firmware/esp32_bench/build/
+firmware/esp32_bench/sdkconfig
+firmware/esp32_bench/sdkconfig.old
+firmware/esp32_bench/managed_components/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
