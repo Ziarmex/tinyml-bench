@@ -1,0 +1,10 @@
+{
+  "windows": 4000,
+  "epochs": 30,
+  "seed": 0,
+  "device": "host",
+  "do_qat": true,
+  "dataset": "synthetic vibration (data.py)",
+  "tensorflow": "2.21.0",
+  "numpy": "1.26.4"
+}
