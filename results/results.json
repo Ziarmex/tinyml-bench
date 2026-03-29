@@ -1,0 +1,53 @@
+[
+  {
+    "name": "autoencoder",
+    "precision": "float32",
+    "model_bytes": 25364,
+    "latency": {
+      "count": 200,
+      "mean_ms": 0.002579349979896506,
+      "p50_ms": 0.002175000190618448,
+      "p95_ms": 0.0035860002753906883,
+      "min_ms": 0.0020609995772247203,
+      "max_ms": 0.033506999898236245
+    },
+    "device": "host",
+    "ram_bytes": null,
+    "accuracy": 0.97125,
+    "notes": "FP32 baseline"
+  },
+  {
+    "name": "autoencoder",
+    "precision": "int8 (PTQ)",
+    "model_bytes": 13808,
+    "latency": {
+      "count": 200,
+      "mean_ms": 0.002149964980162622,
+      "p50_ms": 0.0017330003174720332,
+      "p95_ms": 0.0028780004868167453,
+      "min_ms": 0.00151799940795172,
+      "max_ms": 0.0077290005719987676
+    },
+    "device": "host",
+    "ram_bytes": null,
+    "accuracy": 0.97375,
+    "notes": "post-training quantization"
+  },
+  {
+    "name": "autoencoder",
+    "precision": "int8 (QAT)",
+    "model_bytes": 10520,
+    "latency": {
+      "count": 200,
+      "mean_ms": 0.0019506099715727032,
+      "p50_ms": 0.0018959999579237774,
+      "p95_ms": 0.002163000317523256,
+      "min_ms": 0.0018159998944611289,
+      "max_ms": 0.0063610004872316495
+    },
+    "device": "host",
+    "ram_bytes": null,
+    "accuracy": 0.97,
+    "notes": "quantization-aware training"
+  }
+]
