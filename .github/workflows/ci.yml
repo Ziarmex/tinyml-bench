@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  host-tests:
+    name: Host tests (stdlib only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pytest
+        run: pip install pytest
+      - name: Run tests
+        run: pytest tests -q
+
+      # Prove the report generator updates a README-like file without needing
+      # TensorFlow or committing fabricated results.
+      - name: Report generator smoke test
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json, tempfile, sys
+          sys.path.insert(0, "src")
+          from tinyml_bench import results_from_json, results_to_markdown, update_readme
+
+          results = results_from_json("""
+          [
+            {"name": "autoencoder", "precision": "int8 (PTQ)", "model_bytes": 24832,
+             "latency": {"count": 100, "mean_ms": 3.12, "p50_ms": 3.08, "p95_ms": 3.41,
+                          "min_ms": 3.01, "max_ms": 4.02},
+             "device": "esp32", "ram_bytes": 20160, "accuracy": 0.93, "notes": "smoke"}
+          ]
+          """)
+          with tempfile.TemporaryDirectory() as d:
+              p = Path(d) / "README.md"
+              p.write_text("<!-- BENCH:START -->\n<!-- BENCH:END -->\n")
+              update_readme(p, results_to_markdown(results))
+              text = p.read_text()
+              assert "int8 (PTQ)" in text and "93.0%" in text
+          print("report generator smoke test ok")
+          PY
