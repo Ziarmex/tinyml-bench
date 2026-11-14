@@ -21,21 +21,7 @@ method. That is unverifiable. This harness makes the claim falsifiable:
 
 ## Pipeline
 
-```
-synthetic vibration ──FFT──> 64-D features
-        │
-        ├─ train autoencoder (64-32-16-8-16-32-64)
-        │
-        ├─ float32 .tflite
-        ├─ int8 PTQ .tflite   (representative dataset)
-        └─ int8 QAT .tflite   (tensorflow_model_optimization)
-                    │
-      host: tflite interpreter (latency)   device: ESP32 + TFLite Micro
-                    │                              │
-                    └──────── results.json ────────┘
-                                   │
-                        tools/gen_report.py -> README table
-```
+<img src="docs/diagrams/tinyml-bench-architecture.svg" alt="TinyML benchmark pipeline: synthetic vibration to FFT features to autoencoder, float32 and int8 PTQ/QAT models, host and ESP32 benchmarks, results.json to README table" width="100%">
 
 ## Benchmark results
 

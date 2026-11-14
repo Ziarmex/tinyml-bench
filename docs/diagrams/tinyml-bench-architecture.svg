@@ -1,0 +1,364 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" width="1200" height="780" role="img" aria-labelledby="diagram-title diagram-desc" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+  <title id="diagram-title">tinyml-bench architecture and benchmark flow</title>
+  <desc id="diagram-desc">Synthetic vibration windows become 64-dimensional FFT features and train a 64-32-16-8-16-32-64 autoencoder. The model is converted to float32, int8 PTQ and int8 QAT TFLite files. Host latency is measured with the TFLite interpreter; the ESP32 TFLite Micro harness is ready but unmeasured. Both feed one JSON schema, which gen_report.py turns into the README table.</desc>
+
+  <defs>
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.8" fill="#E8EDF2" opacity="0.09"/>
+    </pattern>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#ECF0F3"/>
+    </marker>
+    <marker id="ar-s" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#9AA3AC"/>
+    </marker>
+    <marker id="ar-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#F0A83C"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="780" fill="#14181D"/>
+  <rect width="1200" height="780" fill="url(#dots)"/>
+
+  <!-- Header -->
+  <text x="48" y="48" font-size="9.5" font-weight="600" letter-spacing="2.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#F0A83C">FIG. 01 — TINYML BENCHMARK HARNESS</text>
+  <text x="48" y="82" font-size="26" font-family="Georgia, 'Times New Roman', serif" fill="#ECF0F3">TinyML quantization bench</text>
+  <text x="48" y="101" font-size="11.5" fill="#9AA3AC">synthetic vibration → 64-D FFT features → autoencoder → float32 / int8 PTQ / int8 QAT</text>
+  <text x="1152" y="52" font-size="9.5" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">4000 windows · 30 epochs · seed 0</text>
+  <text x="1152" y="68" font-size="9.5" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">TensorFlow 2.21.0 · TFLite Micro</text>
+  <line x1="48" y1="112" x2="1152" y2="112" stroke="#2A3037"/>
+
+  <!-- Section 1 labels -->
+  <text x="48" y="138" font-size="9" font-weight="600" letter-spacing="1.7" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">DATA · data.py</text>
+  <text x="400" y="138" font-size="9" font-weight="600" letter-spacing="1.7" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">MODEL · model.py</text>
+  <text x="812" y="138" font-size="9" font-weight="600" letter-spacing="1.7" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">ARTIFACTS · results/*.tflite</text>
+  <text x="1152" y="138" font-size="8.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#F0A83C">TFLiteConverter ×3</text>
+
+  <!-- Synthetic vibration waveform -->
+  <g>
+    <line x1="52" y1="212" x2="148" y2="212" stroke="#3A4550" stroke-dasharray="2 3"/>
+    <line x1="52" y1="246" x2="148" y2="246" stroke="#2A3037"/>
+    <path d="M 52 219 L 53 212 L 54 206 L 54 206 L 55 209 L 56 211 L 56 213 L 57 214 L 58 215 L 59 214 L 60 214 L 60 217 L 61 226 L 62 230 L 63 236 L 63 236 L 64 233 L 65 227 L 66 220 L 66 216 L 67 216 L 68 215 L 69 218 L 69 215 L 70 211 L 71 208 L 72 206 L 72 206 L 73 209 L 74 215 L 75 223 L 75 228 L 76 230 L 77 229 L 78 227 L 78 224 L 79 225 L 80 226 L 81 227 L 82 226 L 82 226 L 83 217 L 84 210 L 84 205 L 85 203 L 86 205 L 87 208 L 88 212 L 88 216 L 89 218 L 90 219 L 91 220 L 91 220 L 92 223 L 93 230 L 94 233 L 94 234 L 95 232 L 96 228 L 97 220 L 97 214 L 98 212 L 99 209 L 100 213 L 100 213 L 101 214 L 102 210 L 103 207 L 103 207 L 104 213 L 105 216 L 106 222 L 106 229 L 107 234 L 108 231 L 109 231 L 109 226 L 110 221 L 111 221 L 112 220 L 112 222 L 113 222 L 114 218 L 115 213 L 116 207 L 116 202 L 117 203 L 118 207 L 118 216 L 119 219 L 120 225 L 121 223 L 122 225 L 122 224 L 123 224 L 124 226 L 125 230 L 125 233 L 126 232 L 127 228 L 128 218 L 128 211 L 129 207 L 130 207 L 131 207 L 131 213 L 132 215 L 133 214 L 134 216 L 134 184 L 135 214 L 136 217 L 137 224 L 137 230 L 138 234 L 139 236 L 140 230 L 140 226 L 141 220 L 142 216 L 143 215 L 144 215 L 144 217 L 145 217 L 146 212 L 146 209 L 147 206 L 148 204" fill="none" stroke="#ECF0F3" stroke-width="1.4" stroke-linejoin="round"/>
+    <circle cx="134.4" cy="184" r="2.2" fill="#F0A83C"/>
+  </g>
+  <text x="100" y="272" font-size="11.5" font-weight="600" text-anchor="middle" fill="#ECF0F3">synthetic vibration</text>
+  <text x="100" y="286" font-size="8.2" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">128 samples · fs 1 kHz</text>
+  <text x="100" y="299" font-size="8.2" text-anchor="middle" fill="#9AA3AC">50 + 120 Hz · impulses</text>
+
+  <line x1="154" y1="215" x2="174" y2="215" stroke="#9AA3AC" stroke-width="1.4" marker-end="url(#ar-s)"/>
+
+  <!-- Spectrum -->
+  <g>
+    <line x1="180" y1="246" x2="256" y2="246" stroke="#2A3037"/>
+    <g fill="#ECF0F3" opacity="0.55">
+      <rect x="180.0" y="209.3" width="2.1" height="36.7"/>
+      <rect x="183.2" y="213.9" width="2.1" height="32.1"/>
+      <rect x="186.3" y="214.4" width="2.1" height="31.6"/>
+      <rect x="189.4" y="214.3" width="2.1" height="31.7"/>
+      <rect x="192.6" y="212.1" width="2.1" height="33.9"/>
+      <rect x="195.8" y="202.6" width="2.1" height="43.4"/>
+      <rect x="202.1" y="193.9" width="2.1" height="52.1"/>
+      <rect x="205.2" y="208.9" width="2.1" height="37.1"/>
+      <rect x="208.3" y="212.1" width="2.1" height="33.9"/>
+      <rect x="211.5" y="217.6" width="2.1" height="28.4"/>
+      <rect x="214.7" y="223.5" width="2.1" height="22.5"/>
+      <rect x="217.8" y="224.4" width="2.1" height="21.6"/>
+      <rect x="220.9" y="220.2" width="2.1" height="25.8"/>
+      <rect x="224.1" y="213.8" width="2.1" height="32.2"/>
+      <rect x="230.4" y="201.0" width="2.1" height="45.0"/>
+      <rect x="233.6" y="208.0" width="2.1" height="38.0"/>
+      <rect x="236.7" y="217.7" width="2.1" height="28.3"/>
+      <rect x="239.8" y="233.7" width="2.1" height="12.3"/>
+      <rect x="243.0" y="234.1" width="2.1" height="11.9"/>
+      <rect x="246.1" y="221.6" width="2.1" height="24.4"/>
+      <rect x="249.3" y="219.9" width="2.1" height="26.1"/>
+      <rect x="252.4" y="222.6" width="2.1" height="23.4"/>
+    </g>
+    <rect x="198.9" y="184.0" width="2.1" height="62.0" fill="#F0A83C"/>
+    <rect x="227.2" y="196.8" width="2.1" height="49.2" fill="#F0A83C"/>
+  </g>
+  <text x="218" y="272" font-size="11.5" font-weight="600" text-anchor="middle" fill="#ECF0F3">FFT</text>
+  <text x="218" y="286" font-size="8.2" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">|rfft| · log1p</text>
+  <text x="218" y="299" font-size="8.2" text-anchor="middle" fill="#9AA3AC">one feature per bin</text>
+
+  <line x1="260" y1="215" x2="272" y2="215" stroke="#9AA3AC" stroke-width="1.4" marker-end="url(#ar-s)"/>
+
+  <!-- Feature vector -->
+  <g fill="#ECF0F3">
+    <circle cx="282" cy="186" r="2" opacity="0.59"/>
+    <circle cx="291" cy="186" r="2" opacity="0.54"/>
+    <circle cx="300" cy="186" r="2" opacity="0.53"/>
+    <circle cx="309" cy="186" r="2" opacity="0.53"/>
+    <circle cx="318" cy="186" r="2" opacity="0.56"/>
+    <circle cx="327" cy="186" r="2" opacity="0.68"/>
+    <circle cx="345" cy="186" r="2" opacity="0.8"/>
+    <circle cx="282" cy="195" r="2" opacity="0.6"/>
+    <circle cx="291" cy="195" r="2" opacity="0.56"/>
+    <circle cx="300" cy="195" r="2" opacity="0.49"/>
+    <circle cx="309" cy="195" r="2" opacity="0.42"/>
+    <circle cx="318" cy="195" r="2" opacity="0.41"/>
+    <circle cx="327" cy="195" r="2" opacity="0.46"/>
+    <circle cx="336" cy="195" r="2" opacity="0.54"/>
+    <circle cx="282" cy="204" r="2" opacity="0.75"/>
+    <circle cx="291" cy="204" r="2" opacity="0.61"/>
+    <circle cx="300" cy="204" r="2" opacity="0.49"/>
+    <circle cx="309" cy="204" r="2" opacity="0.3"/>
+    <circle cx="318" cy="204" r="2" opacity="0.29"/>
+    <circle cx="327" cy="204" r="2" opacity="0.45"/>
+    <circle cx="336" cy="204" r="2" opacity="0.47"/>
+    <circle cx="345" cy="204" r="2" opacity="0.43"/>
+    <circle cx="282" cy="213" r="2" opacity="0.45"/>
+    <circle cx="291" cy="213" r="2" opacity="0.41"/>
+    <circle cx="300" cy="213" r="2" opacity="0.32"/>
+    <circle cx="309" cy="213" r="2" opacity="0.4"/>
+    <circle cx="318" cy="213" r="2" opacity="0.37"/>
+    <circle cx="327" cy="213" r="2" opacity="0.47"/>
+    <circle cx="336" cy="213" r="2" opacity="0.47"/>
+    <circle cx="345" cy="213" r="2" opacity="0.42"/>
+    <circle cx="282" cy="222" r="2" opacity="0.38"/>
+    <circle cx="291" cy="222" r="2" opacity="0.33"/>
+    <circle cx="300" cy="222" r="2" opacity="0.4"/>
+    <circle cx="309" cy="222" r="2" opacity="0.41"/>
+    <circle cx="318" cy="222" r="2" opacity="0.46"/>
+    <circle cx="327" cy="222" r="2" opacity="0.4"/>
+    <circle cx="336" cy="222" r="2" opacity="0.4"/>
+    <circle cx="345" cy="222" r="2" opacity="0.34"/>
+    <circle cx="282" cy="231" r="2" opacity="0.32"/>
+    <circle cx="291" cy="231" r="2" opacity="0.35"/>
+    <circle cx="300" cy="231" r="2" opacity="0.37"/>
+    <circle cx="309" cy="231" r="2" opacity="0.47"/>
+    <circle cx="318" cy="231" r="2" opacity="0.45"/>
+    <circle cx="327" cy="231" r="2" opacity="0.4"/>
+    <circle cx="336" cy="231" r="2" opacity="0.31"/>
+    <circle cx="345" cy="231" r="2" opacity="0.38"/>
+    <circle cx="282" cy="240" r="2" opacity="0.42"/>
+    <circle cx="291" cy="240" r="2" opacity="0.42"/>
+    <circle cx="300" cy="240" r="2" opacity="0.42"/>
+    <circle cx="309" cy="240" r="2" opacity="0.49"/>
+    <circle cx="318" cy="240" r="2" opacity="0.46"/>
+    <circle cx="327" cy="240" r="2" opacity="0.35"/>
+    <circle cx="336" cy="240" r="2" opacity="0.35"/>
+    <circle cx="345" cy="240" r="2" opacity="0.43"/>
+    <circle cx="282" cy="249" r="2" opacity="0.43"/>
+    <circle cx="291" cy="249" r="2" opacity="0.48"/>
+    <circle cx="300" cy="249" r="2" opacity="0.42"/>
+    <circle cx="309" cy="249" r="2" opacity="0.44"/>
+    <circle cx="318" cy="249" r="2" opacity="0.37"/>
+    <circle cx="327" cy="249" r="2" opacity="0.26"/>
+    <circle cx="336" cy="249" r="2" opacity="0.39"/>
+    <circle cx="345" cy="249" r="2" opacity="0.43"/>
+  </g>
+  <circle cx="336" cy="186" r="2" fill="#F0A83C"/>
+  <circle cx="345" cy="195" r="2" fill="#F0A83C"/>
+  <text x="313" y="272" font-size="11.5" font-weight="600" text-anchor="middle" fill="#ECF0F3">64-D features</text>
+  <text x="313" y="286" font-size="8.2" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">N_FEATURES = 64</text>
+  <text x="313" y="299" font-size="8.2" text-anchor="middle" fill="#9AA3AC">float32 vector</text>
+
+  <line x1="354" y1="217" x2="396" y2="217" stroke="#ECF0F3" stroke-width="1.6" marker-end="url(#ar)"/>
+  <text x="375" y="208" font-size="8.2" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">features</text>
+
+  <!-- Autoencoder silhouette and layers -->
+  <g>
+    <polygon points="426,164 473,183 520,198 567,207 614,198 661,183 708,164 708,276 661,257 614,242 567,233 520,242 473,257 426,276" fill="#1C2229" opacity="0.9"/>
+    <rect x="420" y="164" width="12" height="112" rx="1.5" fill="#1C2229" stroke="#ECF0F3" stroke-width="1.2"/>
+    <rect x="467" y="183" width="12" height="74" rx="1.5" fill="#1C2229" stroke="#ECF0F3" stroke-width="1.2"/>
+    <rect x="514" y="198" width="12" height="44" rx="1.5" fill="#1C2229" stroke="#ECF0F3" stroke-width="1.2"/>
+    <rect x="561" y="207" width="12" height="26" rx="2" fill="#2A2318" stroke="#F0A83C" stroke-width="1.6"/>
+    <rect x="608" y="198" width="12" height="44" rx="1.5" fill="#1C2229" stroke="#ECF0F3" stroke-width="1.2"/>
+    <rect x="655" y="183" width="12" height="74" rx="1.5" fill="#1C2229" stroke="#ECF0F3" stroke-width="1.2"/>
+    <rect x="702" y="164" width="12" height="112" rx="1.5" fill="#1C2229" stroke="#ECF0F3" stroke-width="1.2"/>
+    <text x="473" y="156" font-size="8.2" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">encoder</text>
+    <text x="567" y="156" font-size="8.2" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#F0A83C">latent</text>
+    <text x="661" y="156" font-size="8.2" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">decoder</text>
+    <text x="426" y="292" font-size="8.5" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">64</text>
+    <text x="473" y="292" font-size="8.5" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">32</text>
+    <text x="520" y="292" font-size="8.5" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">16</text>
+    <text x="567" y="292" font-size="8.5" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#F0A83C">8</text>
+    <text x="614" y="292" font-size="8.5" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">16</text>
+    <text x="661" y="292" font-size="8.5" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">32</text>
+    <text x="708" y="292" font-size="8.5" text-anchor="middle" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">64</text>
+  </g>
+  <text x="400" y="312" font-size="8.8" fill="#ECF0F3">64-32-16-8-16-32-64 · Dense + ReLU · MSE reconstruction</text>
+  <text x="400" y="324" font-size="8.8" fill="#9AA3AC">trained on normal windows only · θ = μ + 3σ, recomputed per model / precision</text>
+
+  <path d="M736 222 H776 M776 175 V267" fill="none" stroke="#ECF0F3" stroke-width="1.4"/>
+  <path d="M776 175 H806" fill="none" stroke="#ECF0F3" stroke-width="1.4" marker-end="url(#ar)"/>
+  <path d="M776 222 H806" fill="none" stroke="#ECF0F3" stroke-width="1.4" marker-end="url(#ar)"/>
+  <path d="M776 267 H806" fill="none" stroke="#ECF0F3" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <!-- Artifacts -->
+  <g>
+    <rect x="812" y="156" width="340" height="38" rx="4" fill="#1C2229" stroke="#2A3037"/>
+    <rect x="812" y="156" width="3" height="38" rx="1.5" fill="#F0A83C"/>
+    <rect x="824" y="167" width="15" height="19" rx="1.5" fill="#2A2318" stroke="#5A4724"/>
+    <path d="M834 167 v5 h5" fill="none" stroke="#5A4724"/>
+    <text x="848" y="172" font-size="9" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">autoencoder_float.tflite</text>
+    <text x="848" y="186" font-size="8.2" fill="#9AA3AC">FP32 baseline</text>
+    <text x="1138" y="172" font-size="10.5" font-weight="700" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">25,364 B</text>
+    <text x="1138" y="186" font-size="8.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">24.8 KB</text>
+
+    <rect x="812" y="202" width="340" height="38" rx="4" fill="#1C2229" stroke="#2A3037"/>
+    <rect x="812" y="202" width="3" height="38" rx="1.5" fill="#9AA3AC"/>
+    <rect x="824" y="213" width="15" height="19" rx="1.5" fill="#2A2318" stroke="#5A4724"/>
+    <path d="M834 213 v5 h5" fill="none" stroke="#5A4724"/>
+    <text x="848" y="218" font-size="9" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">autoencoder_int8_ptq.tflite</text>
+    <text x="848" y="232" font-size="8.2" fill="#9AA3AC">PTQ · 100-sample rep. set</text>
+    <text x="1138" y="218" font-size="10.5" font-weight="700" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">13,808 B</text>
+    <text x="1138" y="232" font-size="8.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">13.5 KB</text>
+
+    <rect x="812" y="248" width="340" height="38" rx="4" fill="#1C2229" stroke="#2A3037"/>
+    <rect x="812" y="248" width="3" height="38" rx="1.5" fill="#5FE0B4"/>
+    <rect x="824" y="259" width="15" height="19" rx="1.5" fill="#2A2318" stroke="#5A4724"/>
+    <path d="M834 259 v5 h5" fill="none" stroke="#5A4724"/>
+    <text x="848" y="264" font-size="9" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">autoencoder_int8_qat.tflite</text>
+    <text x="848" y="278" font-size="8.2" fill="#9AA3AC">QAT · tfmot retrain</text>
+    <text x="1138" y="264" font-size="10.5" font-weight="700" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">10,520 B</text>
+    <text x="1138" y="278" font-size="8.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">10.3 KB</text>
+  </g>
+  <text x="812" y="302" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">model_bytes = exact flatbuffer size</text>
+
+  <line x1="1000" y1="314" x2="1000" y2="360" stroke="#F0A83C" stroke-width="1.4" stroke-dasharray="3 3" marker-end="url(#ar-a)"/>
+  <text x="1012" y="312" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#F0A83C">export_tflite_header.py</text>
+  <text x="1012" y="324" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#F0A83C">→ model_data.h</text>
+
+  <line x1="48" y1="330" x2="1152" y2="330" stroke="#2A3037"/>
+
+  <!-- Section 2 labels -->
+  <text x="48" y="356" font-size="9" font-weight="600" letter-spacing="1.7" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">HOST · host_bench.py</text>
+  <text x="404" y="356" font-size="9" font-weight="600" letter-spacing="1.7" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">RESULTS · ONE SCHEMA</text>
+  <text x="740" y="356" font-size="9" font-weight="600" letter-spacing="1.7" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">DEVICE · firmware/esp32_bench</text>
+
+  <!-- Host terminal -->
+  <g>
+    <rect x="48" y="368" width="332" height="92" rx="6" fill="#0B0F13" stroke="#262E37"/>
+    <circle cx="64" cy="382" r="3" fill="#5FE0B4"/>
+    <text x="74" y="385" font-size="8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#8FA0B2">host terminal</text>
+    <text x="368" y="385" font-size="8" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#6A7480">x86 · TF 2.21.0</text>
+    <text x="64" y="404" font-size="9" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#8FA0B2">$ <tspan fill="#D6E0E9">python -m tinyml_bench train --device host</tspan></text>
+    <text x="64" y="420" font-size="9" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#C9D5E0">tf.lite.Interpreter · invoke() × 200</text>
+    <text x="64" y="436" font-size="9" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#8FA0B2">warmup 20 · fixed input · nearest-rank p50/p95</text>
+    <text x="64" y="452" font-size="9" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7FE0C2">→ results/results.json · device: "host"</text>
+  </g>
+  <text x="48" y="484" font-size="14" font-weight="700" fill="#ECF0F3">Host benchmark</text>
+  <text x="380" y="484" font-size="8.2" text-anchor="end" letter-spacing="1.1" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#5FE0B4">MEASURED</text>
+  <text x="48" y="500" font-size="10.5" fill="#9AA3AC">TFLite interpreter · Invoke() p50/p95 · held-out accuracy</text>
+
+  <line x1="384" y1="404" x2="400" y2="404" stroke="#ECF0F3" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- Results and report chain -->
+  <g>
+    <rect x="404" y="368" width="312" height="80" rx="6" fill="#1C2229" stroke="#2A3037"/>
+    <text x="416" y="388" font-size="8.8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">results/results.json</text>
+    <text x="704" y="388" font-size="8.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#5FE0B4">3 records</text>
+    <text x="416" y="407" font-size="10" fill="#ECF0F3">host · 3 measured records</text>
+    <text x="416" y="423" font-size="10" fill="#F0A83C">device · 0 records, pending</text>
+    <text x="416" y="439" font-size="8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">BenchmarkResult[] · model_bytes, latency, ram_bytes</text>
+  </g>
+  <line x1="560" y1="448" x2="560" y2="462" stroke="#ECF0F3" stroke-width="1.5" marker-end="url(#ar)"/>
+  <g>
+    <rect x="404" y="464" width="312" height="44" rx="6" fill="#122A24" stroke="#2C5E51"/>
+    <text x="416" y="482" font-size="8.8" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">tools/gen_report.py</text>
+    <text x="416" y="497" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">results_to_markdown() → update_readme()</text>
+  </g>
+  <line x1="570" y1="508" x2="570" y2="566" stroke="#ECF0F3" stroke-width="1.6" marker-end="url(#ar)"/>
+  <text x="582" y="534" font-size="7.8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">writes</text>
+
+  <line x1="736" y1="404" x2="720" y2="404" stroke="#ECF0F3" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- ESP32 board -->
+  <g>
+    <rect x="752" y="374" width="108" height="78" rx="6" fill="#0C4A3F" stroke="#1C6B5B" stroke-width="2"/>
+    <path d="M762 396 h7 v-9 h7 v9 h7 v-9 h7" fill="none" stroke="#D9A441" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <g fill="#D9A441">
+      <rect x="752" y="404" width="7" height="4" rx="1"/><rect x="752" y="414" width="7" height="4" rx="1"/><rect x="752" y="424" width="7" height="4" rx="1"/><rect x="752" y="434" width="7" height="4" rx="1"/>
+      <rect x="853" y="404" width="7" height="4" rx="1"/><rect x="853" y="414" width="7" height="4" rx="1"/><rect x="853" y="424" width="7" height="4" rx="1"/><rect x="853" y="434" width="7" height="4" rx="1"/>
+    </g>
+    <rect x="786" y="398" width="40" height="34" rx="3" fill="#D0D7DD" stroke="#8E99A3"/>
+    <text x="806" y="416" font-size="7.5" font-weight="700" text-anchor="middle" fill="#1C2229">ESP32</text>
+    <text x="806" y="427" font-size="5.3" text-anchor="middle" letter-spacing="0.6" fill="#6A7480">TFLM</text>
+  </g>
+  <text x="876" y="390" font-size="8.8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">TFLite Micro · MicroInterpreter</text>
+  <text x="876" y="406" font-size="8.8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">esp_timer_get_time() → Invoke()</text>
+  <text x="876" y="422" font-size="8.8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">arena_used_bytes() after AllocateTensors</text>
+  <text x="876" y="438" font-size="8.8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">100 iterations · 10 warmup</text>
+  <text x="876" y="454" font-size="8.8" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#F0A83C">status: to measure</text>
+  <text x="740" y="484" font-size="14" font-weight="700" fill="#ECF0F3">ESP32 device benchmark</text>
+  <text x="1152" y="484" font-size="8.2" text-anchor="end" letter-spacing="1.1" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#F0A83C">PENDING</text>
+  <text x="740" y="500" font-size="10.5" fill="#9AA3AC">TFLite Micro · esp_timer · tensor-arena RAM</text>
+
+  <!-- README table comparison -->
+  <text x="48" y="536" font-size="9.5" font-weight="600" letter-spacing="1.5" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">README.md · BENCH TABLE — HOST (x86)</text>
+  <text x="830" y="536" font-size="8.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">generated · do not hand-edit</text>
+  <text x="48" y="560" font-size="8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">variant</text>
+  <text x="250" y="560" font-size="8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">size · bytes</text>
+  <text x="560" y="560" font-size="8" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">p50 ms</text>
+  <text x="640" y="560" font-size="8" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">p95 ms</text>
+  <text x="660" y="560" font-size="8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">acc % · synthetic · axis 96.8–97.6</text>
+  <line x1="48" y1="566" x2="830" y2="566" stroke="#2A3037"/>
+
+  <!-- Row 1 float32 -->
+  <text x="48" y="582" font-size="9.5" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">float32</text>
+  <text x="118" y="582" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">FP32 baseline</text>
+  <rect x="250" y="573" width="100" height="5" rx="2.5" fill="#3A4550"/>
+  <rect x="250" y="573" width="100" height="5" rx="2.5" fill="#F0A83C"/>
+  <text x="358" y="582" font-size="9.2" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">25,364 B</text>
+  <text x="412" y="582" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">24.8 KB</text>
+  <text x="560" y="582" font-size="9.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">0.002175</text>
+  <text x="640" y="582" font-size="9.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">0.003586</text>
+  <line x1="680" y1="578" x2="740" y2="578" stroke="#3A4550"/>
+  <line x1="680" y1="575" x2="680" y2="581" stroke="#3A4550"/>
+  <line x1="740" y1="575" x2="740" y2="581" stroke="#3A4550"/>
+  <circle cx="704.4" cy="578" r="2.6" fill="#5FE0B4"/>
+  <text x="748" y="582" font-size="9.2" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#5FE0B4">97.1%</text>
+
+  <!-- Row 2 PTQ -->
+  <text x="48" y="606" font-size="9.5" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">int8 (PTQ)</text>
+  <text x="118" y="606" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">post-training</text>
+  <rect x="250" y="597" width="100" height="5" rx="2.5" fill="#3A4550"/>
+  <rect x="250" y="597" width="54.4" height="5" rx="2.5" fill="#F0A83C"/>
+  <text x="358" y="606" font-size="9.2" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">13,808 B</text>
+  <text x="412" y="606" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">13.5 KB</text>
+  <text x="560" y="606" font-size="9.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">0.001733</text>
+  <text x="640" y="606" font-size="9.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">0.002878</text>
+  <line x1="680" y1="602" x2="740" y2="602" stroke="#3A4550"/>
+  <line x1="680" y1="599" x2="680" y2="605" stroke="#3A4550"/>
+  <line x1="740" y1="599" x2="740" y2="605" stroke="#3A4550"/>
+  <circle cx="723.1" cy="602" r="2.6" fill="#5FE0B4"/>
+  <text x="748" y="606" font-size="9.2" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#5FE0B4">97.4%</text>
+
+  <!-- Row 3 QAT -->
+  <text x="48" y="630" font-size="9.5" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">int8 (QAT)</text>
+  <text x="118" y="630" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7E8892">quant-aware train.</text>
+  <rect x="250" y="621" width="100" height="5" rx="2.5" fill="#3A4550"/>
+  <rect x="250" y="621" width="41.5" height="5" rx="2.5" fill="#F0A83C"/>
+  <text x="358" y="630" font-size="9.2" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">10,520 B</text>
+  <text x="412" y="630" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#9AA3AC">10.3 KB</text>
+  <text x="560" y="630" font-size="9.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">0.001896</text>
+  <text x="640" y="630" font-size="9.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#ECF0F3">0.002163</text>
+  <line x1="680" y1="626" x2="740" y2="626" stroke="#3A4550"/>
+  <line x1="680" y1="623" x2="680" y2="629" stroke="#3A4550"/>
+  <line x1="740" y1="623" x2="740" y2="629" stroke="#3A4550"/>
+  <circle cx="695" cy="626" r="2.6" fill="#5FE0B4"/>
+  <text x="748" y="630" font-size="9.2" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#5FE0B4">97.0%</text>
+  <line x1="48" y1="638" x2="830" y2="638" stroke="#2A3037"/>
+
+  <!-- Device caveat -->
+  <line x1="852" y1="548" x2="852" y2="636" stroke="#F0A83C" stroke-width="2"/>
+  <text x="864" y="560" font-size="8.5" font-weight="600" letter-spacing="1.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#F0A83C">DEVICE · NOT MEASURED</text>
+  <text x="864" y="580" font-size="12" font-weight="700" fill="#ECF0F3">ESP32 + TFLite Micro</text>
+  <text x="864" y="596" font-size="9.5" fill="#9AA3AC">latency and tensor-arena RAM</text>
+  <text x="864" y="612" font-size="9.5" fill="#9AA3AC">pending a real board run.</text>
+  <text x="864" y="630" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#F0A83C">not published — awaiting a measurement</text>
+
+  <!-- Terminal strip -->
+  <rect x="48" y="650" width="1104" height="54" rx="6" fill="#0B0F13" stroke="#262E37"/>
+  <circle cx="64" cy="664" r="3" fill="#5FE0B4"/>
+  <text x="76" y="667" font-size="8.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#8FA0B2">esp32 monitor · BENCH_JSON</text>
+  <text x="1136" y="667" font-size="8.2" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#6A7480">shape as printed · remap keys into results.json</text>
+  <text x="64" y="684" font-size="9.1" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#7FE0C2">BENCH_JSON <tspan fill="#C9D5E0">{"device":"esp32","model":"autoencoder","precision":"int8 (PTQ)",</tspan></text>
+  <text x="64" y="698" font-size="9.1" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#C9D5E0">  "size_bytes":…,"ram_bytes":…,"iterations":100,"latency_ms":{"mean":…,"p50":…,"p95":…,"min":…,"max":…}}</text>
+
+  <!-- Footer -->
+  <text x="48" y="744" font-size="8.5" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#6A7480">source: results/results.json · docs/benchmark-method.md</text>
+  <text x="1152" y="744" font-size="8.5" text-anchor="end" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace" fill="#6A7480">github.com/Ziarmex/tinyml-bench</text>
+</svg>
